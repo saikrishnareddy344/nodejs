@@ -11,25 +11,54 @@ const middleware = new MiddleWare()
 const mymethods = new MyMethods()
 const log = new Log('index')
 
-app.get("/login", (req, res) => {
-    let params = req.query
-    let user_verification = mymethods.userVerification(params.username,params.password)
+app.post("/login", async (req, res) => {
+    let params = req.body
+    console.log(params)
+    let user_verification =await mymethods.userVerification(params.username,params.password)
+    console.log(user_verification)
     log.EventLog(`login api got called username-->>${params.username} and password-->> ${params.password}`)
-    if (user_verification) {
-        let token = mymethods.generate_token(params.username,params.password)
+    if (user_verification.status) {
+        let token = mymethods.generateToken(params.username,user_verification.message.userId)
         res.send({status:true,message:token})
     }
     else{
-        res.send({status:false,message:"abbhu nahi manenge"})
+        res.send({status:false,message:user_verification.message})
     }
 });
 
-app.post("/form",middleware.jwt_required,middleware.file_upload('profile'), (req, res) => {
-    console.log("protected calling sucessfully",req.file,req.body)
-    res.send("photo reseceved")
+app.post("/userRegestration",middleware.file_upload('profile'), async(req, res) => {
+    console.log("prinitng user data",)
+    try {
+        let result= await mymethods.user_registration(req.body)
+        res.json(result)
+    } catch (error) {
+        log.EventLog("---ERROR---",error)
+        res.json({
+            status:false,
+            message:'unable to create new user'
+        })
+    }
 });
 
+app.get("/checkUsername",async (req,res)=>{
+    try {
+        let result = await mymethods.usernameValidation(req.query.username)
+        res.json(result)
+    } catch (error) {
+        log.EventLog("---ERROR---",error)
+        res.json({
+            status:false,
+            message:'unable to verify username'
+        })
+    }
+})
+
+app.get('/userDetails',middleware.jwt_required,async (req,res)=>{
+    console.log(req.tokenData)
+    res.send(req.tokenData)
+})
+
 let PORT = process.env.PORT;
-app.listen(PORT,"192.168.2.61", () => {
+app.listen(PORT, () => {
 console.log(`Server is up and running on ${PORT} ...`);
 });

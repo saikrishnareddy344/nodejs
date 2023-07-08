@@ -6,7 +6,8 @@ class MiddleWare{
 
     }
     jwt_required(req, res, next) {
-        const authHeader = req.headers['authorization'];
+      console.log("inside jwt required")
+        const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1];
         if (!token) {
           return res.sendStatus(401); // Unauthorized
@@ -16,7 +17,7 @@ class MiddleWare{
             return res.sendStatus(403); // Forbidden
           }
           console.log("jwt user =",user)
-          req.user = user;
+          req.tokenData = user;
           next();
         });
       }
