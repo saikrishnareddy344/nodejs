@@ -4,11 +4,11 @@ const Log = require('./Logs')
 const log = new Log('database')
 
 const pool = new Pool({
-  host: 'localhost',
+  host: '192.168.0.14',
   port: 5432,
-  database: 'postgres',
+  database: 'mobilserv',
   user: 'postgres',
-  password: 'admin'
+  password: 'Uztwhn@41'
 });
 
 
