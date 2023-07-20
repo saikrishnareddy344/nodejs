@@ -78,7 +78,7 @@ class MyMethods{
         let middleName = data.middlename
         let lastName = data.lastname
         let active = data.active
-        // let age = data.age
+        let age = data.age
         // let address = data.address
         let username = firstName+middleName+lastName
         const creation = currentDateTime.toLocaleString()
