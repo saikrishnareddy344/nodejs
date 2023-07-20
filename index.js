@@ -4,7 +4,7 @@ const MiddleWare = require('./MiddleWare')
 const Log = require('./Logs')
 const cors = require('cors')
 require('dotenv').config()
-
+const bcrypt = require('bcrypt')
 const app = express()
 app.use(cors(),express.json())
 const middleware = new MiddleWare()
@@ -13,7 +13,7 @@ const log = new Log('index')
 
 app.post("/login", async (req, res) => {
     try {
-        let params = req.body
+        const params = req.body
         console.log(params)
         let user_verification =await mymethods.userVerification(params.name,params.password)
         console.log(user_verification)
@@ -32,7 +32,21 @@ app.post("/login", async (req, res) => {
         })
     }
 });
-
+app.post('/messagedata',async(req,res)=>{
+    console.log("received data",data)
+    try{
+        const incomingdata = req.body
+        if(incomingdata!=undefined){
+        let receiveddata=await mymethods.sender_receiver_data(incomingdata)
+        res.send({message:receiveddata})
+    }
+    }catch(error){
+        res.send({
+            status:false,
+            message:error
+        })
+    }
+});
 app.post("/userRegestration",middleware.file_upload('profile'), async(req, res) => {
     console.log("prinitng user data",)
     try {
