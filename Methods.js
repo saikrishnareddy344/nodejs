@@ -14,7 +14,7 @@ class MyMethods{
         let hashedPassword = null
         let userId = null
         console.log(username,password)
-        let user_details = await select_query(`select * from ${this.schema_name}.users where username = $1`,[username])
+        let user_details = await select_query(`select * from ${this.schema_name}.users where user_name = $1`,[username])
         console.log(user_details)
         if (user_details.length == 1) {
             hashedPassword = user_details[0].password
@@ -74,20 +74,18 @@ class MyMethods{
     async user_registration(data){
         let hasedPassword =  await bcrypt.hash(data.password, 10)
         let email = data.email
-        let firstName = data.firstname
-        let middleName = data.middlename
-        let lastName = data.lastname
-        let active = data.active
-        let age = data.age
+        let username = data.newusername
         // let address = data.address
-        let username = firstName+middleName+lastName
-        const creation = currentDateTime.toLocaleString()
+        let currentDateTime = new Date()
+        let creation = currentDateTime.toLocaleString()
         console.log(Object.keys(data))
-        let values = [username,age,hasedPassword,email,active,creation]
+        let values = [username,hasedPassword,email,creation]
+        console.log(values)
         try {
-            let query = `insert into ${this.schema_name}.users (username,age,password,email,active,creation_date) VALUES ($1, $2, $3, $4, $5,$6)`
+            let query = `insert into ${this.schema_name}.users (user_name,password,email,creation_date) VALUES ($1, $2, $3, $4)`
             let result = await insert_query(query,values)   
-            log.EventLog(`new user created sucessfully with username ${fullName}`)
+            console.log("sumit",query,result)
+            log.EventLog(`new user created sucessfully with username ${username}`)
             if (result == true) {
                 this.usernames.push(data.username)
                 return {status:true,message:"new user created sucessfully"}
@@ -96,6 +94,7 @@ class MyMethods{
                 return {status:false,message:'unable to create new user'} 
             }
         } catch (error) {
+            console.log(error)
             log.EventLog("---ERROR---",error)
             return {status:false,message:"unable to create new user"}
         }
