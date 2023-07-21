@@ -15,7 +15,7 @@ app.post("/login", async (req, res) => {
     try {
         const params = req.body
         console.log(params)
-        let user_verification =await mymethods.userVerification(params.name,params.password)
+        let user_verification =await mymethods.userVerification(params.username,params.password)
         console.log(user_verification)
         log.EventLog(`login api got called username-->>${params.username} and password-->> ${params.password}`)
         if (user_verification.status) {
@@ -26,6 +26,7 @@ app.post("/login", async (req, res) => {
             res.send({status:false,message:user_verification.message})
         }
     } catch (error) {
+        console.log(error)
         res.send({
             status:false,
             message:error
@@ -47,13 +48,16 @@ app.post('/messagedata',async(req,res)=>{
         })
     }
 });
-app.post("/userRegestration",middleware.file_upload('profile'), async(req, res) => {
+app.post("/userRegestration", async(req, res) => {
     console.log("prinitng user data",)
     try {
         console.log(req.file)
+        console.log(req.body)
         let result= await mymethods.user_registration(req.body)
+        console.log(result)
         res.json(result)
     } catch (error) {
+        console.log(error)
         log.EventLog("---ERROR---",error)
         res.json({
             status:false,
@@ -81,6 +85,6 @@ app.get('/userDetails',middleware.jwt_required,async (req,res)=>{
 })
 
 let PORT = process.env.PORT;
-app.listen(5005,"192.168.2.61", () => {
+app.listen(PORT,"192.168.2.132", () => {
 console.log(`Server is up and running on ${PORT} ...`);
 });
